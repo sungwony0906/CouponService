@@ -1,9 +1,15 @@
 package com.sungwony.coupon.springboot.domain.coupon;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.sungwony.coupon.springboot.domain.BaseTimeEntity;
 import com.sungwony.coupon.springboot.domain.user.User;
 import com.sungwony.coupon.springboot.util.CouponUtils;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -23,6 +29,8 @@ public class Coupon extends BaseTimeEntity {
     private String code;
 
     @Column(nullable = false)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate expireDate;
 
     @Column(nullable = false)
@@ -37,7 +45,7 @@ public class Coupon extends BaseTimeEntity {
 
 
     @Builder
-    private Coupon(String code, LocalDate expireDate, CouponStatus status){
+    public Coupon(String code, LocalDate expireDate, CouponStatus status) {
         this.code = code;
         this.expireDate = expireDate;
         this.status = status;
@@ -45,9 +53,14 @@ public class Coupon extends BaseTimeEntity {
 
     public static Coupon generateCoupon(){
 
+        return generateCoupon(LocalDate.now().plusMonths(3));
+    }
+
+    public static Coupon generateCoupon(LocalDate expireDate){
+
         return Coupon.builder()
                 .code(CouponUtils.generateCode())
-                .expireDate(LocalDate.now().plusMonths(3))
+                .expireDate(expireDate)
                 .status(CouponStatus.CREATED)
                 .build();
     }

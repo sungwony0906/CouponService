@@ -2,8 +2,7 @@ package com.sungwony.coupon.springboot.service;
 
 import com.sungwony.coupon.springboot.domain.coupon.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CouponService {
 
     private final CouponRepository couponRepository;
@@ -42,11 +42,11 @@ public class CouponService {
 
     @Transactional
     public void useCoupon(String code){
-        Coupon coupon = couponRepository.findByCode(code)
+        Coupon coupon = couponRepository.findByCodeAndStatusNot(code, CouponStatus.CREATED)
                             .orElseThrow(() -> new NoAvailableCouponException(CouponError.NON_EXISTENT));
 
         if(coupon.getStatus() == CouponStatus.EXPIRED ||
-                coupon.getExpireDate().isAfter(LocalDate.now()))
+                coupon.getExpireDate().isBefore(LocalDate.now()))
             throw new NoAvailableCouponException(CouponError.EXPIRED);
         else if(coupon.getStatus() == CouponStatus.USED)
             throw new NoAvailableCouponException(CouponError.ALREADY_USED);
@@ -56,14 +56,14 @@ public class CouponService {
 
     @Transactional
     public void cancelCoupon(String code){
-        Coupon coupon = couponRepository.findByCode(code)
+        Coupon coupon = couponRepository.findByCodeAndStatusNot(code, CouponStatus.CREATED)
                             .orElseThrow(() -> new NoAvailableCouponException(CouponError.NON_EXISTENT));
 
         if(coupon.getStatus() == CouponStatus.EXPIRED ||
-                coupon.getExpireDate().isAfter(LocalDate.now()))
+                coupon.getExpireDate().isBefore(LocalDate.now()))
             throw new NoAvailableCouponException(CouponError.EXPIRED);
-        else if(coupon.getStatus() == CouponStatus.USED)
-            throw new NoAvailableCouponException(CouponError.ALREADY_USED);
+        else if(coupon.getStatus() == CouponStatus.ISSUED)
+            throw new NoAvailableCouponException(CouponError.NO_USED);
 
         coupon.setStatus(CouponStatus.CANCELED);
     }
@@ -71,6 +71,13 @@ public class CouponService {
     @Transactional(readOnly = true)
     public List<Coupon> findExpiredCouponListByExpiredDate(LocalDate searchDate){
 
-        return couponRepository.findExpiredCouponListByExpiredDate(searchDate);
+        return couponRepository.findExpiredCouponListByExpireDate(searchDate);
+    }
+
+    public void notifyForCouponExpire(){
+        List<Coupon> couponList = couponRepository.findCouponListByExpireDate(LocalDate.now().plusDays(3));
+        for(Coupon coupon : couponList){
+            log.info("쿠폰이 3일 후 만료됩니다(쿠폰번호 : {})",coupon.getCode());
+        }
     }
 }
