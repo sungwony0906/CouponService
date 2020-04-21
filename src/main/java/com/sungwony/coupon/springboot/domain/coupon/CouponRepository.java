@@ -25,4 +25,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
     @Query("SELECT new com.sungwony.coupon.springboot.domain.coupon.Coupon(c.code, c.expireDate, c.status) FROM Coupon c WHERE c.expireDate = :expireDate AND c.status = 'ISSUED'")
     public List<Coupon> findCouponListByExpireDate(LocalDate expireDate);
+
+    public List<Coupon> findByExpireDateLessThan(LocalDate expireDate);
 }

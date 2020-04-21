@@ -3,6 +3,7 @@ package com.sungwony.coupon.springboot.service;
 import com.sungwony.coupon.springboot.domain.coupon.Coupon;
 import com.sungwony.coupon.springboot.domain.coupon.CouponRepository;
 import com.sungwony.coupon.springboot.domain.coupon.CouponStatus;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,11 @@ public class CouponServiceTest {
     @Autowired
     private CouponRepository couponRepository;
 
+    @After
+    public void teardown(){
+        couponRepository.deleteAll();
+    }
+
     @Test
     public void notifyForCouponExpire() throws Exception{
         //given
@@ -31,7 +37,7 @@ public class CouponServiceTest {
         }
 
         //when
-        couponService.notifyForCouponExpire();
+        couponService.couponExpireWarningNotify();
 
         //then
     }

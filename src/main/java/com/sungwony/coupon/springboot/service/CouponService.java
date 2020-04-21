@@ -74,10 +74,18 @@ public class CouponService {
         return couponRepository.findExpiredCouponListByExpireDate(searchDate);
     }
 
-    public void notifyForCouponExpire(){
+    public void couponExpireWarningNotify(){
         List<Coupon> couponList = couponRepository.findCouponListByExpireDate(LocalDate.now().plusDays(3));
         for(Coupon coupon : couponList){
             log.info("쿠폰이 3일 후 만료됩니다(쿠폰번호 : {})",coupon.getCode());
+        }
+    }
+
+    @Transactional
+    public void couponExpire() {
+        List<Coupon> couponList = couponRepository.findByExpireDateLessThan(LocalDate.now());
+        for(Coupon coupon : couponList){
+            coupon.setStatus(CouponStatus.EXPIRED);
         }
     }
 }
