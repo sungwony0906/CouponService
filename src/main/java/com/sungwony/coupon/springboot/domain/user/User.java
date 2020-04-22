@@ -1,5 +1,6 @@
 package com.sungwony.coupon.springboot.domain.user;
 
+import com.sungwony.coupon.springboot.config.auth.StringCryptoConverter;
 import com.sungwony.coupon.springboot.domain.coupon.Coupon;
 import lombok.*;
 
@@ -24,7 +25,8 @@ public class User {
     @Column(length = 255)
     private String email;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 100)
+    @Convert(converter = StringCryptoConverter.class)
     private String password;
 
     @Column(length = 255)
