@@ -1,15 +1,13 @@
 package com.sungwony.coupon.springboot.domain.user;
 
 import com.sungwony.coupon.springboot.domain.coupon.Coupon;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class User {
 
@@ -20,19 +18,28 @@ public class User {
     @Column(nullable = false, unique = true, length = 30)
     private String userId;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 127)
     private String name;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String email;
+
+    @Column(nullable = false, length = 30)
+    private String password;
+
+    @Column(length = 255)
+    @Setter
+    private String token;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Coupon> couponList;
 
     @Builder
-    public User(String userId, String name, String email){
+    public User(String userId, String password, String name, String email, String token){
         this.userId = userId;
+        this.password = password;
         this.name = name;
         this.email = email;
+        this.token = token;
     }
 }

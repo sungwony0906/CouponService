@@ -33,4 +33,7 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     annotationProcessor('org.projectlombok:lombok')
     testAnnotationProcessor('org.projectlombok:lombok')
+
+    //auth0 JWT
+    implementation('com.auth0:java-jwt:3.8.2')
 }

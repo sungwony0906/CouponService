@@ -1,10 +1,15 @@
 package com.sungwony.coupon.springboot.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sungwony.coupon.springboot.config.JwtProperties;
 import com.sungwony.coupon.springboot.domain.coupon.Coupon;
 import com.sungwony.coupon.springboot.domain.coupon.CouponError;
 import com.sungwony.coupon.springboot.domain.coupon.CouponRepository;
 import com.sungwony.coupon.springboot.domain.coupon.CouponStatus;
+import com.sungwony.coupon.springboot.domain.user.User;
+import com.sungwony.coupon.springboot.domain.user.UserRepository;
+import com.sungwony.coupon.springboot.util.JwtUtils;
+import com.sungwony.coupon.springboot.util.JwtUtilsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
@@ -45,7 +50,28 @@ public class CouponApiControllerTest {
     @Autowired
     private WebApplicationContext webContext;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
     private MockMvc mvc;
+
+    private User user;
+
+    @Before
+    public void setupUser() throws Exception{
+        user = User.builder()
+                .userId("sungwon")
+                .password("password")
+                .email("email@gmail.com")
+                .name("sungwon")
+                .token(jwtUtils.createToken("sungwon"))
+                .build();
+
+        userRepository.save(user);
+    }
 
     @Before
     public void setup() throws Exception{
@@ -57,6 +83,7 @@ public class CouponApiControllerTest {
     @After
     public void tearDown() throws Exception{
         couponRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -67,6 +94,7 @@ public class CouponApiControllerTest {
 
         //when
         mvc.perform(post(url)
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(String.valueOf(count)))
                 .andExpect(status().isOk());
@@ -84,7 +112,8 @@ public class CouponApiControllerTest {
         String url = "http://localhost:"+port+"/api/coupon";
 
         //when
-        MvcResult result = mvc.perform(get(url))
+        MvcResult result = mvc.perform(get(url)
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -108,7 +137,8 @@ public class CouponApiControllerTest {
         coupon3 = couponRepository.save(coupon3);
 
         //when
-        MvcResult result = mvc.perform(get(url))
+        MvcResult result = mvc.perform(get(url)
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -132,6 +162,7 @@ public class CouponApiControllerTest {
 
         //when
         mvc.perform(put(url+issuedCoupon.getCode())
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(CouponStatus.USED.toString()))
                 .andExpect(status().isOk());
@@ -146,6 +177,7 @@ public class CouponApiControllerTest {
 
         //when
         MvcResult resultCreated = mvc.perform(put(url+createdCoupon.getCode())
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(CouponStatus.USED.toString()))
                 .andExpect(status().isOk())
@@ -161,6 +193,7 @@ public class CouponApiControllerTest {
 
         //when
         MvcResult resultUsed = mvc.perform(put(url+usedCoupon.getCode())
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(CouponStatus.USED.toString()))
                 .andExpect(status().isOk())
@@ -176,6 +209,7 @@ public class CouponApiControllerTest {
 
         //when
         MvcResult resultExpire = mvc.perform(put(url+expiredCoupon.getCode())
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(CouponStatus.USED.toString()))
                 .andExpect(status().isOk())
@@ -196,6 +230,7 @@ public class CouponApiControllerTest {
 
         //when
         mvc.perform(put(url+usedCoupon.getCode())
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(CouponStatus.CANCELED.toString()))
                 .andExpect(status().isOk());
@@ -210,6 +245,7 @@ public class CouponApiControllerTest {
 
         //when
         MvcResult resultCreated = mvc.perform(put(url+createdCoupon.getCode())
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(CouponStatus.CANCELED.toString()))
                 .andExpect(status().isOk())
@@ -225,6 +261,7 @@ public class CouponApiControllerTest {
 
         //when
         MvcResult resultIssued = mvc.perform(put(url+issuedCoupon.getCode())
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(CouponStatus.CANCELED.toString()))
                 .andExpect(status().isOk())
@@ -240,6 +277,7 @@ public class CouponApiControllerTest {
 
         //when
         MvcResult resultExpired = mvc.perform(put(url+expiredCoupon.getCode())
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(CouponStatus.CANCELED.toString()))
                 .andExpect(status().isOk())
@@ -269,7 +307,8 @@ public class CouponApiControllerTest {
         couponRepository.save(canceledCoupon);
 
         //when
-        MvcResult result = mvc.perform(get(url))
+        MvcResult result = mvc.perform(get(url)
+                .header(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+" "+user.getToken()))
                 .andExpect(status().isOk())
                 .andReturn();
 

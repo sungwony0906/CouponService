@@ -6,8 +6,6 @@ import com.sungwony.coupon.springboot.domain.coupon.NoAvailableCouponException;
 import com.sungwony.coupon.springboot.service.CouponService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -21,9 +19,8 @@ public class CouponApiController {
     private final CouponService couponService;
 
     @PostMapping("/api/coupon")
-    public ResponseEntity generateCoupon(@RequestBody int count){
+    public void generateCoupon(@RequestBody int count){
         couponService.generateCoupon(count);
-        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/api/coupon")
@@ -42,13 +39,11 @@ public class CouponApiController {
     }
 
     @PutMapping("/api/coupon/{code}")
-    public ResponseEntity useCoupon(@PathVariable String code, @RequestBody String status){
+    public void useCoupon(@PathVariable String code, @RequestBody String status){
         if(status.equals(CouponStatus.USED.toString()))
             couponService.useCoupon(code);
         else if(status.equals(CouponStatus.CANCELED.toString()))
             couponService.cancelCoupon(code);
-
-        return new ResponseEntity(HttpStatus.OK);
     }
 
     @ExceptionHandler(NoAvailableCouponException.class)
