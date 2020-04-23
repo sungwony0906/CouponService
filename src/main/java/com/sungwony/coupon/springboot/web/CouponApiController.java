@@ -6,6 +6,8 @@ import com.sungwony.coupon.springboot.domain.coupon.CouponStatus;
 import com.sungwony.coupon.springboot.domain.coupon.NoAvailableCouponException;
 import com.sungwony.coupon.springboot.domain.user.User;
 import com.sungwony.coupon.springboot.service.CouponService;
+import com.sungwony.coupon.springboot.web.dto.GenerateCouponDto;
+import com.sungwony.coupon.springboot.web.dto.StatusCouponRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -21,27 +23,28 @@ public class CouponApiController {
     private final CouponService couponService;
 
     @PostMapping("/api/coupon")
-    public void generateCoupon(@RequestBody int count){
-        couponService.generateCoupon(count);
+    public void generateCoupon(@RequestBody GenerateCouponDto generateCouponDto){
+        couponService.generateCoupon(generateCouponDto.getCount());
     }
 
     @GetMapping("/api/coupon")
-    public String issueCoupon() {
-        return couponService.issueCoupon().getCode();
+    public String issueCoupon(@LoginUser User user) {
+        return couponService.issueCoupon(user).getCode();
     }
 
-    @GetMapping("/api/coupons")
-    public List<Coupon> findIssuedCouponList(@RequestParam String status){
-        if(status.equals(CouponStatus.ISSUED.toString()))
-            return couponService.findIssuedCouponList();
-        else if(status.equals(CouponStatus.EXPIRED.toString()))
-            return couponService.findExpiredCouponListByExpiredDate(LocalDate.now());
+    @GetMapping("/api/coupons/issued")
+    public List<Coupon> findIssuedCouponList(@LoginUser User user, @RequestParam String status){
+        return couponService.findIssuedCouponListByUserId(user);
+    }
 
-        return null;
+    @GetMapping("/api/coupons/expired")
+    public List<Coupon> findExpiredCouponList(){
+        return couponService.findExpiredCouponListByExpiredDate(LocalDate.now());
     }
 
     @PutMapping("/api/coupon/{code}")
-    public void useCoupon(@LoginUser User user, @PathVariable String code, @RequestBody String status){
+    public void useOrCancelCoupon(@LoginUser User user, @PathVariable String code, @RequestBody StatusCouponRequestDto statusCouponRequestDto){
+        String status = statusCouponRequestDto.getStatus();
         if(status.equals(CouponStatus.USED.toString()))
             couponService.useCoupon(code, user);
         else if(status.equals(CouponStatus.CANCELED.toString()))

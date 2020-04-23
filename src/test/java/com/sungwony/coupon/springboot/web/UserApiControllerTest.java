@@ -24,9 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -121,9 +119,12 @@ public class UserApiControllerTest {
         userRepository.save(user);
 
         //when
-        MvcResult mvcResult = mvc.perform(get(url)
-                .param("userId","userId")
-                .param("password","password")
+        SignInRequestDto signInRequestDto = new SignInRequestDto();
+        signInRequestDto.setUserId("userId");
+        signInRequestDto.setPassword("password");
+        MvcResult mvcResult = mvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(new ObjectMapper().writeValueAsString(signInRequestDto))
         ).andExpect(status().isOk())
                 .andReturn();
 

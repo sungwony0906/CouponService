@@ -24,10 +24,10 @@ public class UserApiController {
         userService.signUp(signUpRequestDto);
     }
 
-    @GetMapping("/api/signIn")
-    public SignInResponseDto signIn(@ModelAttribute @Valid SignInRequestDto signInRequestDto, HttpServletResponse response) throws Exception{
+    @PostMapping("/api/signIn")
+    public SignInResponseDto signIn(@RequestBody @Valid SignInRequestDto signInRequestDto, HttpServletResponse response) throws Exception{
         SignInResponseDto signInResponseDto = userService.signIn(signInRequestDto);
-        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + signInResponseDto.getToken());
+        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX +" "+ signInResponseDto.getToken());
         return signInResponseDto;
     }
 }

@@ -1,6 +1,7 @@
 package com.sungwony.coupon.springboot.domain.coupon;
 
 
+import com.sungwony.coupon.springboot.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,8 +14,8 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     @Query(value = "SELECT * FROM coupon c WHERE c.status = 'CREATED' limit 1", nativeQuery = true)
     public Optional<Coupon> findOneOfUnusedCoupon();
 
-    @Query("SELECT new com.sungwony.coupon.springboot.domain.coupon.Coupon(c.code, c.expireDate, c.status) FROM Coupon c WHERE c.status = 'ISSUED'")
-    public List<Coupon> findIssuedCouponList();
+    @Query("SELECT new com.sungwony.coupon.springboot.domain.coupon.Coupon(c.code, c.expireDate, c.status) FROM Coupon c WHERE c.user = :user")
+    public List<Coupon> findIssuedCouponListByUserId(User user);
 
     public Optional<Coupon> findByCode(String code);
 

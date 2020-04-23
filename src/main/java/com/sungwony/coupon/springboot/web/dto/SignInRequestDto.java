@@ -1,6 +1,5 @@
 package com.sungwony.coupon.springboot.web.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

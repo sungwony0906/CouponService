@@ -19,26 +19,29 @@ public class CouponService {
 
     @Transactional
     public void generateCoupon(int numOfCoupon){
-        for(int i=0; i<numOfCoupon; i++) {
+        int count = 0;
+        while(count < numOfCoupon) {
             Coupon coupon = Coupon.generateCoupon();
             Coupon findCoupon = couponRepository.findByCode(coupon.getCode()).orElse(null);
-            if (findCoupon == null)
+            if (findCoupon == null) {
+                count ++;
                 couponRepository.save(coupon);
+            }
         }
     }
 
     @Transactional
-    public Coupon issueCoupon(){
+    public Coupon issueCoupon(User user){
         Coupon coupon = couponRepository.findOneOfUnusedCoupon()
                             .orElseThrow(() -> new NoAvailableCouponException(CouponError.NO_AVAILABLE_COUPON));
         coupon.setStatus(CouponStatus.ISSUED);
+        coupon.setUser(user);
         return coupon;
     }
 
     @Transactional(readOnly = true)
-    public List<Coupon> findIssuedCouponList(){
-
-        return couponRepository.findIssuedCouponList();
+    public List<Coupon> findIssuedCouponListByUserId(User user){
+        return couponRepository.findIssuedCouponListByUserId(user);
     }
 
     @Transactional
@@ -51,6 +54,8 @@ public class CouponService {
             throw new NoAvailableCouponException(CouponError.EXPIRED);
         else if(coupon.getStatus() == CouponStatus.USED)
             throw new NoAvailableCouponException(CouponError.ALREADY_USED);
+        else if(!user.getId().equals(coupon.getUser().getId()))
+            throw new NoAvailableCouponException(CouponError.NO_GRANT);
 
         coupon.setStatus(CouponStatus.USED);
         coupon.setUser(user);
