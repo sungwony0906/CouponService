@@ -1,6 +1,7 @@
 package com.sungwony.coupon.springboot.service;
 
 import com.sungwony.coupon.springboot.domain.coupon.*;
+import com.sungwony.coupon.springboot.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class CouponService {
     }
 
     @Transactional
-    public void useCoupon(String code){
+    public void useCoupon(String code, User user){
         Coupon coupon = couponRepository.findByCodeAndStatusNot(code, CouponStatus.CREATED)
                             .orElseThrow(() -> new NoAvailableCouponException(CouponError.NON_EXISTENT));
 
@@ -52,10 +53,11 @@ public class CouponService {
             throw new NoAvailableCouponException(CouponError.ALREADY_USED);
 
         coupon.setStatus(CouponStatus.USED);
+        coupon.setUser(user);
     }
 
     @Transactional
-    public void cancelCoupon(String code){
+    public void cancelCoupon(String code, User user){
         Coupon coupon = couponRepository.findByCodeAndStatusNot(code, CouponStatus.CREATED)
                             .orElseThrow(() -> new NoAvailableCouponException(CouponError.NON_EXISTENT));
 
@@ -64,6 +66,8 @@ public class CouponService {
             throw new NoAvailableCouponException(CouponError.EXPIRED);
         else if(coupon.getStatus() == CouponStatus.ISSUED)
             throw new NoAvailableCouponException(CouponError.NO_USED);
+        else if(!user.getId().equals(coupon.getUser().getId()))
+            throw new NoAvailableCouponException(CouponError.NO_GRANT);
 
         coupon.setStatus(CouponStatus.CANCELED);
     }

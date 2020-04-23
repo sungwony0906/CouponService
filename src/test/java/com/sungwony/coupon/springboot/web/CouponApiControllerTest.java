@@ -226,6 +226,7 @@ public class CouponApiControllerTest {
         String url = "http://localhost"+port+"/api/coupon/";
         Coupon usedCoupon = Coupon.generateCoupon();
         usedCoupon.setStatus(CouponStatus.USED);
+        usedCoupon.setUser(user);
         usedCoupon = couponRepository.save(usedCoupon);
 
         //when

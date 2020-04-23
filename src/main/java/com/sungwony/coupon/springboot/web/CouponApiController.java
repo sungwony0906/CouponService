@@ -1,8 +1,10 @@
 package com.sungwony.coupon.springboot.web;
 
+import com.sungwony.coupon.springboot.config.auth.LoginUser;
 import com.sungwony.coupon.springboot.domain.coupon.Coupon;
 import com.sungwony.coupon.springboot.domain.coupon.CouponStatus;
 import com.sungwony.coupon.springboot.domain.coupon.NoAvailableCouponException;
+import com.sungwony.coupon.springboot.domain.user.User;
 import com.sungwony.coupon.springboot.service.CouponService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +41,11 @@ public class CouponApiController {
     }
 
     @PutMapping("/api/coupon/{code}")
-    public void useCoupon(@PathVariable String code, @RequestBody String status){
+    public void useCoupon(@LoginUser User user, @PathVariable String code, @RequestBody String status){
         if(status.equals(CouponStatus.USED.toString()))
-            couponService.useCoupon(code);
+            couponService.useCoupon(code, user);
         else if(status.equals(CouponStatus.CANCELED.toString()))
-            couponService.cancelCoupon(code);
+            couponService.cancelCoupon(code, user);
     }
 
     @ExceptionHandler(NoAvailableCouponException.class)

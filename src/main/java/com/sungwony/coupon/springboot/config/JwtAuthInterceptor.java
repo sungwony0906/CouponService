@@ -40,12 +40,11 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         verifyToken(givenToken, user.getToken());
+        request.getSession().setAttribute("user", user);
         return true;
     }
 
     public void verifyToken(String givenToken, String membersToken){
-        log.info("givenToken = [{}]",givenToken);
-        log.info("memberToken = [{}]",membersToken);
         if(! givenToken.equals(membersToken))
             throw new IllegalArgumentException("Token이 일치하지 않습니다.");
 
