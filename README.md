@@ -2,8 +2,10 @@
 ======================
 
 ## 1. 개발 프레임워크
-  Spring Boot 2.1.7 RELEASE
-  Spring Data JPA
+```
+Spring Boot 2.1.7 RELEASE
+Spring Data JPA
+```
   
 ## 2. Rest API
 ### 사용자 관리 서비스
