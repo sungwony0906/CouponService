@@ -31,28 +31,28 @@ curl -v -X POST http://localhost:8080/api/signIn \
 ```
 curl -v -X POST http://localhost:8080/api/coupon \ 
      -H "Content-Type: application/json" \ 
-     -H "Authorization: bearer ${TOKEN}" \
+     -H "Authorization: Bearer ${TOKEN}" \
      -d '{ "count" : "${numOfCoupon}" }' #
 ```
 * 쿠폰 지급
 ```
 curl -v -X GET http://localhost:8080/api/coupon \ 
      -H "Content-Type: application/json" \
-     -H "Authorization: bearer ${TOKEN}" 
+     -H "Authorization: Bearer ${TOKEN}" 
 ```
 
 * 지급된 쿠폰 조회
 ```
 curl -v -X GET http://localhost:8080/api/coupons/issued \ 
      -H "Content-Type: application/json" \
-     -H "Authorization: bearer ${TOKEN}" 
+     -H "Authorization: Bearer ${TOKEN}" 
 ```
 
 * 쿠폰 사용
 ```
 curl -v -X PUT http://localhost:8080/api/coupon/{code} \ 
      -H "Content-Type: application/json" \ 
-     -H "Authorization: bearer ${TOKEN}" \
+     -H "Authorization: Bearer ${TOKEN}" \
      -d '{ "status" : "USED" }'
 ```
 
@@ -60,7 +60,7 @@ curl -v -X PUT http://localhost:8080/api/coupon/{code} \
 ```
 curl -v -X PUT http://localhost:8080/api/coupon/{code} \ 
      -H "Content-Type: application/json" \ 
-     -H "Authorization: bearer ${TOKEN}" \
+     -H "Authorization: Bearer ${TOKEN}" \
      -d '{ "status" : "CANCELED" }'
 ```
 
@@ -68,7 +68,7 @@ curl -v -X PUT http://localhost:8080/api/coupon/{code} \
 ```
 curl -v -X GET http://localhost:8080/api/coupons/expired \ 
      -H "Content-Type: application/json" \ 
-     -H "Authorization: bearer ${TOKEN}"
+     -H "Authorization: Bearer ${TOKEN}"
 ```
 
 ## 3. 문제해결 전략
