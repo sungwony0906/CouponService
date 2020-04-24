@@ -53,7 +53,7 @@ curl -v -X GET http://localhost:8080/api/coupons/issued \
 curl -v -X PUT http://localhost:8080/api/coupon/{code} \ 
      -H "Content-Type: application/json" \ 
      -H "Authorization: Bearer ${TOKEN}" \
-     -d '{ "status" : "USED" }'
+     -d '{ "status" : "USED" }' #
 ```
 
 * 쿠폰 취소
@@ -61,7 +61,7 @@ curl -v -X PUT http://localhost:8080/api/coupon/{code} \
 curl -v -X PUT http://localhost:8080/api/coupon/{code} \ 
      -H "Content-Type: application/json" \ 
      -H "Authorization: Bearer ${TOKEN}" \
-     -d '{ "status" : "CANCELED" }'
+     -d '{ "status" : "CANCELED" }' #
 ```
 
 * 당일 만료된 쿠폰 조회
