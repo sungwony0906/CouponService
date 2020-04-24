@@ -50,4 +50,9 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
         jwtUtils.verifyToken(givenToken);
     }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        request.getSession().invalidate();
+    }
 }

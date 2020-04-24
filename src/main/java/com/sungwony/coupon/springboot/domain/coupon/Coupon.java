@@ -39,7 +39,7 @@ public class Coupon extends BaseTimeEntity {
     private CouponStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupons")
+    @JoinColumn(name = "user")
     @Setter
     private User user;
 
