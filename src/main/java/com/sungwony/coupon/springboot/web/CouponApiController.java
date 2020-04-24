@@ -33,7 +33,7 @@ public class CouponApiController {
     }
 
     @GetMapping("/api/coupons/issued")
-    public List<Coupon> findIssuedCouponList(@LoginUser User user, @RequestParam String status){
+    public List<Coupon> findIssuedCouponList(@LoginUser User user){
         return couponService.findIssuedCouponListByUserId(user);
     }
 
