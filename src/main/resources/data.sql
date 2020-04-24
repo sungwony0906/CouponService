@@ -1,0 +1,1 @@
+insert into USER(user_Id, name, email, password, token) values ('sungwony', 'sungwon', 'sungwony0906@gmail.com', 'd/1pKz64DyCvgR5FM+RGMg==', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdW5nd29ueSIsImlzcyI6IlNVTkdXT04iLCJleHAiOjE1ODc3Nzc0MTZ9.kEhE0kMRCQLhrE-xcQh9N3kHRRqaezfMfNu4CxE2w5Q');
